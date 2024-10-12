@@ -6,6 +6,12 @@ trigger:
     - main
 
 steps:
+  - name: Initialize
+    image: hugomods/hugo:latest
+    commands:
+      - git submodule update --init
+      - hugo version
+
   - name: Build
     image: hugomods/hugo:latest
     commands:
