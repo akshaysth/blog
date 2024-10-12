@@ -13,9 +13,10 @@ steps:
       - hugo version
 
   - name: Build
-    image: hugomods/hugo:latest
-    commands:
-      - hugo
+    image: plugins/hugo
+    settings:
+      hugo_version: 0.135
+      validate: true
 
   - name: publish
     image: plugins/gh-pages
