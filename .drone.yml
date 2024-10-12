@@ -1,0 +1,19 @@
+kind: pipeline
+name: default
+trigger:
+  branch:
+    - main
+
+steps:
+  - name: Build
+    image: klakegg/hugo:alpine
+    commands:
+      - hugo
+
+  - name: publish
+    image: plugins/gh-pages
+    settings:
+      username: akshaysth
+      password:
+        from_secret: gh_password
+      pages_directory: public/
