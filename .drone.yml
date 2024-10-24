@@ -28,7 +28,7 @@ steps:
     settings:
       username: akshaysth
       password:
-        from_secret: gh_token
+        from_secret: gh_password
       pages_directory: public
       copy_contents: true
 
