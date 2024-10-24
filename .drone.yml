@@ -48,8 +48,6 @@ steps:
     tags:
       - latest
       - ${DRONE_TAG}
-    when:
-      event: tag
 
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
