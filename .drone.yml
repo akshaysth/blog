@@ -26,40 +26,48 @@ steps:
       - docker info
 
   - name: Build nginx container
-    image: plugins/docker
+    image: docker
     settings:
       repo: m00se/blog
       dockerfile: public/Dockerfile
-      username: m00se
-      password:
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
+      DOCKER_TLS_CERTDIR: ""
+      GITEA_USER: m00se
+      GITEA_PASS:
         from_secret: gitea_token
+    commands:
+      - echo $GITEA_PASS | docker login --username $GITEA_USER --password-stdin
+      - docker build -t m00se/blog:latest public/Dockerfile
+      - docker build -t m00se/blog:${DRONE_BUILD_NUMBER} public/Dockerfile
     tags:
       - latest
       - ${DRONE_BUILD_NUMBER}
-      - custom
     when:
       event:
         - push
         - pull_request
-  - name: Tag docker image
-    image: plugins/docker
-    settings:
-      repo: m00se/blog
-      dockerfile: public/Dockerfile
-      username: m00se
-      password:
-        from_secret: gitea_token
-    tags:
-      - latest
-      - ${DRONE_TAG##v}
-    when:
-      event:
-        - tag
+  # - name: Tag docker image
+  #   image: plugins/docker
+  #   settings:
+  #     repo: m00se/blog
+  #     dockerfile: public/Dockerfile
+  #     username: m00se
+  #     password:
+  #       from_secret: gitea_token
+  #   tags:
+  #     - latest
+  #     - ${DRONE_TAG##v}
+  #   when:
+  #     event:
+  #       - tag
 
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
     settings:
-      api_key: a4bdd424175f583c64d4aad8c7917bf69afe70c8
+      api_key:
+        from_secret: gitea_token
       base_url: https://git.hyperios.space
       files:
         - public/**
@@ -68,9 +76,6 @@ steps:
       title: Release Hugo blog
       note: |
         Hugo blog built by Drone and deployed via NGINX
-    when:
-      event:
-        - tag
 
 services:
   - name: docker
