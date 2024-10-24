@@ -38,7 +38,7 @@ steps:
       GITEA_PASS:
         from_secret: gitea_token
     commands:
-      - echo $GITEA_PASS | docker login --username $GITEA_USER --password-stdin
+      - echo $GITEA_PASS | docker login --username $GITEA_USER --password-stdin git.hyperios.space
       - docker build -t m00se/blog:latest public/Dockerfile
       - docker build -t m00se/blog:${DRONE_BUILD_NUMBER} public/Dockerfile
     tags:
