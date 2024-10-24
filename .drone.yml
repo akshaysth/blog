@@ -50,6 +50,8 @@ services:
   - name: docker
     image: docker:dind
     privileged: true # Use DinD in privileged mode
+    environment:
+      DOCKER_TLS_CERTDIR: ""  # Disable TLS for Docker-in-Docker
 
 trigger:
   branch:
