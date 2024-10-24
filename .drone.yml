@@ -45,6 +45,11 @@ steps:
       # - docker login -u ${GITEA_USER} -p ${GITEA_PASS} git.hyperios.space
       - docker build -t blog:"${DRONE_TAG}" ./public
       # - drone push git.hyperios.space/m00se/blog:"${DRONE_TAG}"
+    tags:
+      - latest
+      - ${DRONE_TAG}
+    when:
+      event: tag
 
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
