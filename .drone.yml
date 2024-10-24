@@ -24,6 +24,7 @@ steps:
       - echo "Checking Hugo version."
       - hugo version
       - cd /drone/src/hugo/
+
       # Disable panicOnWarning due to bug in Hugo
       - hugo --environment development --verbose --debug # --panicOnWarning
       - ls -al /drone/src/hugo/public
