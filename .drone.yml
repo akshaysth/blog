@@ -22,6 +22,7 @@ steps:
       DOCKER_HOST: tcp://docker:2376
       DOCKER_TLS_CERTDIR: ""
     commands:
+      - sleep 15
       - docker info
 
   - name: Build nginx container
