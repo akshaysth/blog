@@ -29,7 +29,8 @@ steps:
       username: akshaysth
       password:
         from_secret: gh_token
-      pages_directory: public/
+      pages_directory: public
+      copy_contents: true
 
   # - name: Initialize
   #   image: hugomods/hugo:0.136.4
