@@ -22,7 +22,7 @@ steps:
       DOCKER_HOST: tcp://docker:2375
       DOCKER_TLS_CERTDIR: ""
     commands:
-      - sleep 15
+      - sleep 5
       - docker info
 
   - name: Build nginx container
@@ -31,8 +31,10 @@ steps:
       DOCKER_BUILDKIT: 1
       DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
       DOCKER_TLS_CERTDIR: ""
+      GITEA_USER: m00se
+      GITEA_PASS:
+        from_secret: gitea_token
     commands:
-      - sleep 10
       - |
         # Create a Dockerfile for NGINX serving the blog
         cat << EOF > public/Dockerfile
@@ -40,7 +42,9 @@ steps:
         COPY . /usr/share/nginx/html
         EXPOSE 80
         EOF
-      - docker build -t blog:latest ./public
+      - docker login -u ${GITEA_USER} -p ${GITEA_PASS} git.hyperios.space
+      - docker build -t blog:${DRONE_TAG} ./public
+      - drone push git.hyperios.space/m00se/blog:${DRONE_TAG}
 
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
@@ -54,6 +58,9 @@ steps:
       title: Release Hugo blog
       note: |
         Hugo blog built by Drone and deployed via NGINX
+    when:
+      event:
+        - tag
 
 services:
   - name: docker
