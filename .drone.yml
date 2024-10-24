@@ -22,24 +22,21 @@ steps:
       DOCKER_HOST: tcp://docker:2375
       DOCKER_TLS_CERTDIR: ""
     commands:
-      - sleep 5
+      # - sleep 5
       - docker info
 
   - name: Build nginx container
-    image: docker
+    image: plugins/docker
     settings:
       repo: m00se/blog
       dockerfile: public/Dockerfile
-    environment:
-      DOCKER_BUILDKIT: 1
-      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
-      DOCKER_TLS_CERTDIR: ""
-      GITEA_USER: m00se
-      GITEA_PASS:
+      username: m00se
+      password:
         from_secret: gitea_token
     tags:
       - latest
       - ${DRONE_BUILD_NUMBER}
+      - custom
     when:
       event:
         - push
