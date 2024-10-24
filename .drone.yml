@@ -17,7 +17,7 @@ steps:
     #   validate: true
 
   - name: Build nginx container
-    image: docker
+    image: plugins/docker
     environment:
       DOCKER_BUILDKIT: 1
     commands:
