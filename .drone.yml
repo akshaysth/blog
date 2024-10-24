@@ -23,6 +23,17 @@ steps:
       - hugo version
       - hugo -D --minify
 
+  - name: Publish to GitHub Pages
+    image: gvacaliuc/drone-gh-pages
+    settings:
+      pages_directory: public
+      upstream_name: https://github.com/akshaysth/blog.git
+      target_branch: gh-pages
+      force_push: true
+      username: akshaysth
+      password:
+        from_secret: gh_token
+
   # - name: Initialize
   #   image: hugomods/hugo:0.136.4
   #   commands:
