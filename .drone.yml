@@ -23,3 +23,10 @@ steps:
       password:
         from_secret: gh_password
       pages_directory: public/
+  
+  - name: netlify
+    image: lucap/drone-netlify
+    settings:
+      token:
+        from_secret: netlify_token
+      site_id: 1f39aa19-50b0-4e61-9fb6-f0818623416c
