@@ -44,4 +44,5 @@ steps:
         Hugo blog built by Drone and deployed via NGINX
 
 trigger:
-  branch: main
+  branch: 
+    - main
