@@ -27,6 +27,9 @@ steps:
 
   - name: Build nginx container
     image: docker
+    settings:
+      repo: m00se/blog
+      dockerfile: public/Dockerfile
     environment:
       DOCKER_BUILDKIT: 1
       DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
@@ -34,20 +37,27 @@ steps:
       GITEA_USER: m00se
       GITEA_PASS:
         from_secret: gitea_token
-    commands:
-      - |
-        # Create a Dockerfile for NGINX serving the blog
-        cat << EOF > public/Dockerfile
-        FROM nginx:alpine
-        COPY . /usr/share/nginx/html
-        EXPOSE 80
-        EOF
-      # - docker login -u ${GITEA_USER} -p ${GITEA_PASS} git.hyperios.space
-      - docker build -t blog:"${DRONE_TAG}" ./public
-      # - drone push git.hyperios.space/m00se/blog:"${DRONE_TAG}"
     tags:
       - latest
-      - ${DRONE_TAG}
+      - ${DRONE_BUILD_NUMBER}
+    when:
+      event:
+        - push
+        - pull_request
+  - name: Tag docker image
+    image: plugins/docker
+    settings:
+      repo: m00se/blog
+      dockerfile: public/Dockerfile
+      username: m00se
+      password:
+        from_secret: gitea_token
+    tags:
+      - latest
+      - ${DRONE_TAG##v}
+    when:
+      event:
+        - tag
 
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
