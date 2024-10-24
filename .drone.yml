@@ -16,6 +16,14 @@ steps:
     #   hugo_version: 0.135
     #   validate: true
 
+  - name: Check Docker Service
+    image: docker
+    environment:
+      DOCKER_HOST: tcp://docker:2375
+      DOCKER_TLS_CERTDIR: ""
+    commands:
+      - docker info
+
   - name: Build nginx container
     image: docker
     environment:
