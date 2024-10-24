@@ -10,9 +10,12 @@ steps:
 
   - name: Build
     image: plugins/hugo
-    settings:
-      hugo_version: 0.135
-      validate: true
+    commands:
+      - git submodule update --remote
+      - hugo
+    # settings:
+    #   hugo_version: 0.135
+    #   validate: true
 
   - name: publish
     image: plugins/gh-pages
