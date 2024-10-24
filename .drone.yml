@@ -8,25 +8,40 @@ steps:
       - git submodule update --init
       - hugo version
 
-  - name: Build
+  - name: Build Hugo site
     image: hugomods/hugo:0.136.4
     commands:
-      - hugo
+      - hugo --minify
     # settings:
     #   hugo_version: 0.135
     #   validate: true
 
-  - name: publish
-    image: plugins/gh-pages
+  - name: Build nginx container
+    image: docker
+    environment:
+      DOCKER_BUILDKIT: 1
+    commands:
+      - |
+        # Create a Dockerfile for NGINX serving the blog
+        cat << EOF > public/Dockerfile
+        FROM nginx:alpine
+        COPY . /usr/share/nginx/html
+        EXPOSE 80
+        EOF
+      - docker build -t blog:latest ./public
+    
+  - name: Push Pre-Release to Gitea
+    image: plugins/gitea-release
     settings:
-      username: akshaysth
-      password:
-        from_secret: gh_password
-      pages_directory: public/
-  
-  - name: netlify
-    image: lucap/drone-netlify
-    settings:
-      token:
-        from_secret: netlify_token
-      site_id: 1f39aa19-50b0-4e61-9fb6-f0818623416c
+      api_key: a4bdd424175f583c64d4aad8c7917bf69afe70c8
+      base_url: https://git.hyperios.space
+      files: 
+        - public/**
+      checksum: sha256
+      draft: false
+      title: Release Hugo blog
+      note: |
+        Hugo blog built by Drone and deployed via NGINX
+
+trigger:
+  branch: main
