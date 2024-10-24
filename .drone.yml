@@ -17,11 +17,12 @@ steps:
     #   validate: true
 
   - name: Build nginx container
-    image: plugins/docker
+    image: docker
     environment:
       DOCKER_BUILDKIT: 1
+      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
+      DOCKER_TLS_CERTDIR: ""
     commands:
-      - ls -al /var/run/docker.sock
       - |
         # Create a Dockerfile for NGINX serving the blog
         cat << EOF > public/Dockerfile
@@ -30,13 +31,13 @@ steps:
         EXPOSE 80
         EOF
       - docker build -t blog:latest ./public
-    
+
   - name: Push Pre-Release to Gitea
     image: plugins/gitea-release
     settings:
       api_key: a4bdd424175f583c64d4aad8c7917bf69afe70c8
       base_url: https://git.hyperios.space
-      files: 
+      files:
         - public/**
       checksum: sha256
       draft: false
@@ -44,6 +45,11 @@ steps:
       note: |
         Hugo blog built by Drone and deployed via NGINX
 
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true # Use DinD in privileged mode
+
 trigger:
-  branch: 
+  branch:
     - main
