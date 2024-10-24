@@ -26,7 +26,7 @@ steps:
   - name: Publish to GitHub Pages
     image: plugins/gh-pages
     settings:
-      pages_directory: public/
+      pages_directory: public
       username: akshaysth
       password:
         from_secret: gh_token
