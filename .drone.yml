@@ -3,15 +3,14 @@ name: default
 
 steps:
   - name: Initialize
-    image: hugomods/hugo:latest
+    image: hugomods/hugo:0.136.4
     commands:
       - git submodule update --init
       - hugo version
 
   - name: Build
-    image: plugins/hugo
+    image: hugomods/hugo:0.136.4
     commands:
-      - git submodule update --remote
       - hugo
     # settings:
     #   hugo_version: 0.135
