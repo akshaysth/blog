@@ -21,6 +21,7 @@ steps:
     environment:
       DOCKER_BUILDKIT: 1
     commands:
+      - ls -al /var/run/docker.sock
       - |
         # Create a Dockerfile for NGINX serving the blog
         cat << EOF > public/Dockerfile
