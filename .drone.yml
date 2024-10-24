@@ -20,7 +20,7 @@ steps:
     image: docker
     environment:
       DOCKER_BUILDKIT: 1
-      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
+      DOCKER_HOST: tcp://docker:2376 # Use the Docker-in-Docker service
       DOCKER_TLS_CERTDIR: ""
     commands:
       - sleep 10
