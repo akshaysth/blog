@@ -1,53 +1,79 @@
+---
 kind: pipeline
-name: default
+type: docker
+name: Test Environment
+
+trigger:
+  branch:
+    - develop
+  event:
+    include:
+      - push
 
 steps:
-  - name: Initialize
-    image: hugomods/hugo:0.136.4
+  - name: Clone Git Submodules
+    image: alpine/git
     commands:
-      - git submodule update --init
+      - git submodule init
+      - git submodule update --recursive --remote
+
+  - name: Build with hugo
+    image: binaryronin/drone-hugo:latest
+    pull: always
+    commands:
+      - echo "Checking Hugo version."
       - hugo version
+      - cd /drone/src/hugo/
+      # Disable panicOnWarning due to bug in Hugo
+      - hugo --environment development --verbose --debug # --panicOnWarning
+      - ls -al /drone/src/hugo/public
 
-  - name: Build Hugo site
-    image: hugomods/hugo:0.136.4
-    commands:
-      - hugo --minify
-    # settings:
-    #   hugo_version: 0.135
-    #   validate: true
+  # - name: Initialize
+  #   image: hugomods/hugo:0.136.4
+  #   commands:
+  #     - git submodule update --init
+  #     - hugo version
 
-  - name: Check Docker Service
-    image: docker
-    environment:
-      DOCKER_HOST: tcp://docker:2375
-      DOCKER_TLS_CERTDIR: ""
-    commands:
-      # - sleep 5
-      - docker info
+  # - name: Build Hugo site
+  #   image: hugomods/hugo:0.136.4
+  #   commands:
+  #     - hugo --minify
+  # settings:
+  #   hugo_version: 0.135
+  #   validate: true
 
-  - name: Build nginx container
-    image: docker
-    settings:
-      repo: m00se/blog
-      dockerfile: public/Dockerfile
-    environment:
-      DOCKER_BUILDKIT: 1
-      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
-      DOCKER_TLS_CERTDIR: ""
-      GITEA_USER: m00se
-      GITEA_PASS:
-        from_secret: gitea_token
-    commands:
-      - echo $GITEA_PASS | docker login --username $GITEA_USER --password-stdin git.hyperios.space
-      - docker build -t m00se/blog:latest ./public/Dockerfile
-      - docker build -t m00se/blog:${DRONE_BUILD_NUMBER} ./public/Dockerfile
-    tags:
-      - latest
-      - ${DRONE_BUILD_NUMBER}
-    when:
-      event:
-        - push
-        - pull_request
+  # - name: Check Docker Service
+  #   image: docker
+  #   environment:
+  #     DOCKER_HOST: tcp://docker:2375
+  #     DOCKER_TLS_CERTDIR: ""
+  #   commands:
+  #     # - sleep 5
+  #     - docker info
+
+  # - name: Build nginx container
+  #   image: docker
+  #   settings:
+  #     repo: m00se/blog
+  #     dockerfile: public/Dockerfile
+  #   environment:
+  #     DOCKER_BUILDKIT: 1
+  #     DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
+  #     DOCKER_TLS_CERTDIR: ""
+  #     GITEA_USER: m00se
+  #     GITEA_PASS:
+  #       from_secret: gitea_token
+  #   commands:
+  #     - echo $GITEA_PASS | docker login --username $GITEA_USER --password-stdin git.hyperios.space
+  #     - docker build -t m00se/blog:latest ./public/Dockerfile
+  #     - docker build -t m00se/blog:${DRONE_BUILD_NUMBER} ./public/Dockerfile
+  #   tags:
+  #     - latest
+  #     - ${DRONE_BUILD_NUMBER}
+  #   when:
+  #     event:
+  #       - push
+  #       - pull_request
   # - name: Tag docker image
   #   image: plugins/docker
   #   settings:
@@ -62,32 +88,31 @@ steps:
   #   when:
   #     event:
   #       - tag
+#   - name: Push Pre-Release to Gitea
+#     image: plugins/gitea-release
+#     settings:
+#       api_key:
+#         from_secret: gitea_token
+#       base_url: https://git.hyperios.space
+#       files:
+#         - public/**
+#       checksum: sha256
+#       draft: false
+#       title: Release Hugo blog
+#       note: |
+#         Hugo blog built by Drone and deployed via NGINX
+#     when:
+#       event:
+#         tag
 
-  - name: Push Pre-Release to Gitea
-    image: plugins/gitea-release
-    settings:
-      api_key:
-        from_secret: gitea_token
-      base_url: https://git.hyperios.space
-      files:
-        - public/**
-      checksum: sha256
-      draft: false
-      title: Release Hugo blog
-      note: |
-        Hugo blog built by Drone and deployed via NGINX
-    when:
-      event:
-        tag
+# services:
+#   - name: docker
+#     image: docker:dind
+#     privileged: true # Use DinD in privileged mode
+#     environment:
+#       DOCKER_TLS_CERTDIR: "" # Disable TLS for Docker-in-Docker
+#     command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
 
-services:
-  - name: docker
-    image: docker:dind
-    privileged: true # Use DinD in privileged mode
-    environment:
-      DOCKER_TLS_CERTDIR: "" # Disable TLS for Docker-in-Docker
-    command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
-
-trigger:
-  branch:
-    - main
+# trigger:
+#   branch:
+#     - main
