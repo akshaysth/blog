@@ -24,12 +24,9 @@ steps:
       - hugo -D --minify
 
   - name: Publish to GitHub Pages
-    image: gvacaliuc/drone-gh-pages
+    image: plugins/gh-pages
     settings:
-      pages_directory: public
-      upstream_name: https://github.com/akshaysth/blog.git
-      target_branch: gh-pages
-      force_push: true
+      pages_directory: public/
       username: akshaysth
       password:
         from_secret: gh_token
