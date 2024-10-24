@@ -24,10 +24,6 @@ steps:
       validate: true
       extended: true
 
-      # Disable panicOnWarning due to bug in Hugo
-      - hugo --environment development --verbose --debug # --panicOnWarning
-      - ls -al /drone/src/public
-
   # - name: Initialize
   #   image: hugomods/hugo:0.136.4
   #   commands:
