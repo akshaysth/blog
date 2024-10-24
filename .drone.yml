@@ -18,16 +18,11 @@ steps:
       - git submodule update --recursive --remote
 
   - name: Build with hugo
-    image: binaryronin/drone-hugo:latest
-    pull: always
-    commands:
-      - echo "Checking Hugo version."
-      - hugo version
-      - ls -al /drone/src
-      - cd /drone/src/
-      # Disable panicOnWarning due to bug in Hugo
-      - hugo --environment development --verbose --debug # --panicOnWarning
-      - ls -al /drone/src/public
+    image: plugins/hugo
+    settings:
+      hugo_version: 0.136.4
+      validate: true
+      extended: true
 
   # - name: Initialize
   #   image: hugomods/hugo:0.136.4
