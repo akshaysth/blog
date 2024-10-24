@@ -23,11 +23,12 @@ steps:
     commands:
       - echo "Checking Hugo version."
       - hugo version
-      - cd /drone/src/hugo/
+      - ls -al /drone/src
+      - cd /drone/src/
 
       # Disable panicOnWarning due to bug in Hugo
       - hugo --environment development --verbose --debug # --panicOnWarning
-      - ls -al /drone/src/hugo/public
+      - ls -al /drone/src/public
 
   # - name: Initialize
   #   image: hugomods/hugo:0.136.4
