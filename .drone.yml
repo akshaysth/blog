@@ -19,7 +19,7 @@ steps:
   - name: Check Docker Service
     image: docker
     environment:
-      DOCKER_HOST: tcp://docker:2376
+      DOCKER_HOST: tcp://docker:2375
       DOCKER_TLS_CERTDIR: ""
     commands:
       - sleep 15
@@ -29,7 +29,7 @@ steps:
     image: docker
     environment:
       DOCKER_BUILDKIT: 1
-      DOCKER_HOST: tcp://docker:2376 # Use the Docker-in-Docker service
+      DOCKER_HOST: tcp://docker:2375 # Use the Docker-in-Docker service
       DOCKER_TLS_CERTDIR: ""
     commands:
       - sleep 10
@@ -61,6 +61,7 @@ services:
     privileged: true # Use DinD in privileged mode
     environment:
       DOCKER_TLS_CERTDIR: "" # Disable TLS for Docker-in-Docker
+    command: ["dockerd", "-H", "tcp://0.0.0.0:2375", "--tls=false"]
 
 trigger:
   branch:
