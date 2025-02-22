@@ -4,29 +4,74 @@ title: Musings of a m00se
 theme: gokarna
 enableRobotsTXT: true
 params:
-    contact:
-        email: admin@hyperios.space
-    subtitle: woo!
-    avatarURL: /images/logo.png
+  contact:
+    email: admin@hyperios.space
+  subtitle: woo!
+  avatarURL: /images/logo.png
+  accentColor: "#FFB140"
+  avatarSize: size-xs
+  showBackToTopButton: true
+  showPostsOnHomePage: recent
 
+  description: musings
+  footer: " "
+  metaKeywords:
+    - blog
+    - hugo
+    - threat intelligence
+    - malware analysis
+
+  socialIcons:
+    - name: twitter
+      url: https://x.com/
+    - name: linkedin
+      url: https://linkedin.com/
+    - name: email
+      url: mailto:admin@hyperios.space
+
+  customCommentHTML: |
+    <script src="https://utteranc.es/client.js"
+    repo="526avijitgupta/gokarna"
+    issue-term="title"
+    theme="github-dark"
+    crossorigin="anonymous"
+    async></script>
+  customFooterHTML: |
+    <div id="commento"></div>
+    <script defer src="{{ .Site.Params.CommentoURL }}/js/commento.js"></script>
+    <noscript>Please enable JavaScript to load the comments.</noscript>
 menus:
-    main:
+  main:
+    - name: Home
+      pageRef: /
+      weight: 1
+      pre: <span data-feather="home"></span>
     - name: Posts
       pageRef: /posts/
-      weight: 1
+      weight: 2
+      pre: <span data-feather="book"></span>
     - name: Projects
       url: /projects/
-      weight: 2
+      weight: 3
+      pre: <span data-feather="code"></span>
     - name: Tags
       url: /tags/
-      weight: 3
-    - identifier: github
-      url: https://github.com
       weight: 4
+      pre: <span data-feather="tag"></span>
+    - identifier: github
+      url: https://github.com/akshaysth
+      weight: 5
       pre: <span data-feather="github"></span>
     - identifier: twitter
-      url: https://x.com
-      weight: 5
+      url: https://x.com/AkshaySth
+      weight: 6
       pre: <span data-feather="twitter"></span>
 
-copyright: "Verbatim copying and distribution of this entire article are permitted worldwide, without royalty, in any medium, provided this notice is preserved."
+markup:
+  tableOfContents:
+    startLevel: 1
+    endLevel: 3
+    ordered: false
+
+minify:
+  minifyOutput: true
